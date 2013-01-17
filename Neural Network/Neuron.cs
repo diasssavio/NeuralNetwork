@@ -8,31 +8,32 @@ namespace Neural_Network
 {
     class Neuron
     {
-        // 1.ATTRIBUTES
+        // ------------------- 1.VARIABLES AND PROPERTIES ------------------- 
         // Constants
         private static double bias = 1.0;
         private static double learningRate = 0.5;
 
-        // Forward instances
-        private double[] inputs;
-        private double[] weights; // The bias weight is found in the first position
-        private double output;
+        // Forward instances with its properties
+        public double[] Input { get; set; } //private double[] inputs;
+        // The bias weight is found in the first position
+        public double[] Weights { get; set; }   //private double[] weights;
+        public double Output { get; set; }  //private double output;
 
-        // Backward instances
-        private double expectedOutput;
-        private double error;
-        private double backPropagatedError;
+        // Backward instances with its properties
+        public double ExpectedOutput { get; set; }  //private double expectedOutput;
+        public double Error { get; set; }   //private double error;
+        public double BackPropagatedError { get; set; } //private double backPropagatedError;
 
-        // 2.CONSTRUCTORS
+        //  ------------------- 2.CONSTRUCTORS ------------------- 
         public Neuron(){}
 
         public Neuron(double[] input)
         {
-            this.Input = input;
+            Input = input;
         }
 
-        // 3.PROPERTIES
-        public static double Bias 
+        //  ------------------- 3.PROPERTIES ------------------- 
+        public static double Bias
         {
             get { return bias; }
             set { bias = value; }
@@ -44,43 +45,7 @@ namespace Neural_Network
             set { learningRate = value; }
         }
 
-        public double[] Input
-        {
-            get { return inputs; }
-            set { inputs = value; }
-        }
-
-        public double[] Weights
-        {
-            get { return weights; }
-            set { weights = value; }
-        }
-
-        public double Output
-        {
-            get { return output; }
-            set { output = value; }
-        }
-
-        public double ExpectedOutput
-        {
-            get { return expectedOutput; }
-            set { expectedOutput = value; }
-        }
-
-        public double Error
-        {
-            get { return error; }
-            set { error = value; }
-        }
-
-        public double BackPropagatedError
-        {
-            get { return backPropagatedError; }
-            set { backPropagatedError = value; }
-        }
-
-        // 5.FUNCTIONAL METHODS
+        //  ------------------- 4.FUNCTIONAL METHODS ------------------- 
         /**
          * Sorteia o peso para cada entrada incluindo o bias
          */
@@ -104,7 +69,7 @@ namespace Neural_Network
         public void Forward()
         {
             // Performing the sum of the inputs with the weights
-            double sum = bias * Weights[0];
+            double sum = Bias * Weights[0];
             for ( int i = 0; i < Input.Length; i++ )
                 sum += Input[ i ] * Weights[ i + 1 ];
 
@@ -132,9 +97,9 @@ namespace Neural_Network
             BackPropagatedError = (1.0 - Output * Output) * Error;
 
             // Weights adjustment
-            Weights[0] += learningRate * bias * BackPropagatedError;
+            Weights[0] += LearningRate * Bias * BackPropagatedError;
             for (int i = 1; i < Weights.Length; i++)
-                Weights[i] += learningRate * Input[i - 1] * BackPropagatedError;
+                Weights[i] += LearningRate * Input[i - 1] * BackPropagatedError;
         }
     }
 }

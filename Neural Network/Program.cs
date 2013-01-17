@@ -58,8 +58,6 @@ namespace Neural_Network
                 Console.WriteLine();
             }
 
-            //double[] inputs = { 1.0, 1.0 };
-            //Console.WriteLine("  ");
         }
     }
 }
