@@ -10,7 +10,7 @@ namespace Neural_Network
     {
         // 1.ATTRIBUTES
         // Constants
-        private static double bias = 1;
+        private static double bias = 1.0;
         private static double learningRate = 0.5;
 
         // Forward instances
@@ -26,78 +26,58 @@ namespace Neural_Network
         // 2.CONSTRUCTORS
         public Neuron(){}
 
-        public Neuron(double[] inputs)
+        public Neuron(double[] input)
         {
-            SetInputs(inputs);
+            this.Input = input;
         }
 
-        /*public Neuron(int inputsSize)
+        // 3.PROPERTIES
+        public static double Bias 
         {
-            this.inputs = new double[inputsSize];
-            this.weights = new double[inputsSize + 1];
-        }*/
-
-        // 3.SETTERS METHODS
-        public static void SetBias(double biasToSet)
-        {
-            bias = biasToSet;
+            get { return bias; }
+            set { bias = value; }
         }
 
-        public static void SetLearningRate(double rate)
+        public static double LearningRate
         {
-            learningRate = rate;
+            get { return learningRate; }
+            set { learningRate = value; }
         }
 
-        public void SetInputs(double[] inputs)
+        public double[] Input
         {
-            this.inputs = inputs;
-            //SortWeights();
+            get { return inputs; }
+            set { inputs = value; }
         }
 
-        public void SetWeights(double[] weights)
+        public double[] Weights
         {
-            this.weights = weights;
+            get { return weights; }
+            set { weights = value; }
         }
 
-        public void SetExpectedOutput(double expectedOutput)
+        public double Output
         {
-            this.expectedOutput = expectedOutput;
+            get { return output; }
+            set { output = value; }
         }
 
-        // 4.GETTERS METHODS
-        public static double GetBias()
+        public double ExpectedOutput
         {
-            return bias;
+            get { return expectedOutput; }
+            set { expectedOutput = value; }
         }
 
-        public static double GetLearningRate()
+        public double Error
         {
-            return learningRate;
+            get { return error; }
+            set { error = value; }
         }
 
-        public double[] GetInputs()
+        public double BackPropagatedError
         {
-            return this.inputs;
-        }
-
-        public double GetOutput()
-        {
-            return this.output;
-        }
-
-        public double[] GetWeights()
-        {
-            return this.weights;
-        }
-
-        public double GetExpectedOutput()
-        {
-            return this.expectedOutput;
-        }
-
-        public double GetError()
-        {
-            return this.error;
+            get { return backPropagatedError; }
+            set { backPropagatedError = value; }
         }
 
         // 5.FUNCTIONAL METHODS
@@ -108,14 +88,14 @@ namespace Neural_Network
         {
             // Instantiating weights vector
             // First position to store bias weight
-            weights = new double[inputs.Length + 1];
+            Weights = new double[Input.Length + 1];
 
             // Instantiating the class to random numbers generation
             Random random = new Random( DateTime.Now.Millisecond );
 
             // Filling the weights vector
-            for (int i = 0; i < weights.Length; i++)
-                weights[i] = random.Next(-1000, 1000) / 1000.0;
+            for (int i = 0; i < Weights.Length; i++)
+                Weights[i] = random.Next(-1000, 1000) / 1000.0;
         }
 
         /**
@@ -124,12 +104,12 @@ namespace Neural_Network
         public void Forward()
         {
             // Performing the sum of the inputs with the weights
-            double sum = bias * weights[0];
-            for ( int i = 0; i < inputs.Length; i++ )
-                sum += inputs[ i ] * weights[ i + 1 ];
+            double sum = bias * Weights[0];
+            for ( int i = 0; i < Input.Length; i++ )
+                sum += Input[ i ] * Weights[ i + 1 ];
 
             // Validation function
-            output = Math.Tanh( sum );
+            Output = Math.Tanh( sum );
         }
 
         /**
@@ -137,21 +117,24 @@ namespace Neural_Network
          */
         public void Backward( double[] inputs, double expectedOutput )
         {
-            SetInputs(inputs);
-            SetExpectedOutput(expectedOutput);
+            //SetInputs(inputs);
+            Input = inputs;
+            ExpectedOutput = expectedOutput;
+            //SetExpectedOutput(expectedOutput);
 
-            this.Forward();
+            // Call to Forward method to realize the respective calculus
+            Forward();
 
             // Error calculation
-            this.error = this.expectedOutput - this.output;
+            Error = ExpectedOutput - Output;
             
             // Back propagated error calculation
-            this.backPropagatedError = (1.0 - this.output * this.output) * this.error;
+            BackPropagatedError = (1.0 - Output * Output) * Error;
 
             // Weights adjustment
-            weights[0] += learningRate * bias * backPropagatedError;
-            for (int i = 1; i < weights.Length; i++)
-                weights[i] += learningRate * this.inputs[i - 1] * backPropagatedError;
+            Weights[0] += learningRate * bias * BackPropagatedError;
+            for (int i = 1; i < Weights.Length; i++)
+                Weights[i] += learningRate * Input[i - 1] * BackPropagatedError;
         }
     }
 }

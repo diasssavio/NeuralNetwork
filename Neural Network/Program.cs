@@ -22,39 +22,39 @@ namespace Neural_Network
             double[] weights = { -0.1, 0.4, 0.1 };
 
             Neuron neuron = new Neuron(inputs);
-            neuron.SetWeights(weights);
+            neuron.Weights = weights;
             neuron.Forward();
 
-            Console.WriteLine("bias: {0}", Neuron.GetBias());
+            Console.WriteLine("bias: {0}", Neuron.Bias);
 
             Console.Write("Inputs: ");
-            foreach (double value in neuron.GetInputs())
+            foreach (double value in neuron.Input)
                 Console.Write("{0:f4}  ", value);
             Console.WriteLine();
 
             Console.Write("Weights:");
-            foreach (double value in neuron.GetWeights())
+            foreach (double value in neuron.Weights)
                 Console.Write("{0:f4}  ", value);
             Console.WriteLine();
 
-            Console.Write("Output: {0:f4}", neuron.GetOutput());
+            Console.Write("Output: {0:f4}", neuron.Output);
         }
 
         static void LearningNeuron()
         {
             Neuron neuron = new Neuron();
-            neuron.SetWeights(new double[] { -1.0, 1.0, 0.5 });
+            neuron.Weights = new double[] { -1.0, 1.0, 0.5 };
 
             for (int i = 1; i <= 10; i++)
             {
                 neuron.Backward(new double[] { -1.0, -1.0 }, -1.0);
-                Console.WriteLine("{0}: -1.0, -1.0 = {1:f6}", i, neuron.GetOutput());
+                Console.WriteLine("{0}: -1.0, -1.0 = {1:f6}", i, neuron.Output);
                 neuron.Backward(new double[] { 1.0, -1.0 }, -1.0);
-                Console.WriteLine("{0}: 1.0, -1.0 = {1:f6}", i, neuron.GetOutput());
+                Console.WriteLine("{0}: 1.0, -1.0 = {1:f6}", i, neuron.Output);
                 neuron.Backward(new double[] { -1.0, 1.0 }, -1.0);
-                Console.WriteLine("{0}: -1.0, 1.0 = {1:f6}", i, neuron.GetOutput());
+                Console.WriteLine("{0}: -1.0, 1.0 = {1:f6}", i, neuron.Output);
                 neuron.Backward(new double[] { 1.0, 1.0 }, 1.0);
-                Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, neuron.GetOutput());
+                Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, neuron.Output);
                 Console.WriteLine();
             }
 
