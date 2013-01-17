@@ -11,11 +11,11 @@ namespace Neural_Network
         // 1.ATTRIBUTES
         // Constants
         private static double bias = 1;
-        private static double learningRate = 0.1;
+        private static double learningRate = 0.5;
 
         // Forward instances
         private double[] inputs;
-        private double[] weights;
+        private double[] weights; // The bias weight is found in the first position
         private double output;
 
         // Backward instances
@@ -26,10 +26,16 @@ namespace Neural_Network
         // 2.CONSTRUCTORS
         public Neuron(){}
 
-        public Neuron(ref double[] inputs)
+        public Neuron(double[] inputs)
         {
-            SetInputs(ref inputs);
+            SetInputs(inputs);
         }
+
+        /*public Neuron(int inputsSize)
+        {
+            this.inputs = new double[inputsSize];
+            this.weights = new double[inputsSize + 1];
+        }*/
 
         // 3.SETTERS METHODS
         public static void SetBias(double biasToSet)
@@ -42,13 +48,13 @@ namespace Neural_Network
             learningRate = rate;
         }
 
-        public void SetInputs(ref double[] inputs)
+        public void SetInputs(double[] inputs)
         {
             this.inputs = inputs;
-            SortWeights();
+            //SortWeights();
         }
 
-        private void SetWeights(ref double[] weights)
+        public void SetWeights(double[] weights)
         {
             this.weights = weights;
         }
@@ -96,12 +102,13 @@ namespace Neural_Network
 
         // 5.FUNCTIONAL METHODS
         /**
-         * Sorteia o peso para cada entrada
+         * Sorteia o peso para cada entrada incluindo o bias
          */
         private void SortWeights()
         {
             // Instantiating weights vector
-            weights = new double[inputs.Length + 1]; // Ultima posição para armazenar peso do bias
+            // First position to store bias weight
+            weights = new double[inputs.Length + 1];
 
             // Instantiating the class to random numbers generation
             Random random = new Random( DateTime.Now.Millisecond );
@@ -116,11 +123,10 @@ namespace Neural_Network
          */
         public void Forward()
         {
-            // Performing the sum of the inputsss with the weights
-            double sum = 0;
+            // Performing the sum of the inputs with the weights
+            double sum = bias * weights[0];
             for ( int i = 0; i < inputs.Length; i++ )
-                sum += inputs[ i ] * weights[ i ];
-            sum += bias * weights[ weights.Length - 1 ];
+                sum += inputs[ i ] * weights[ i + 1 ];
 
             // Validation function
             output = Math.Tanh( sum );
@@ -129,10 +135,12 @@ namespace Neural_Network
         /**
          * Realiza o processo de retro-propagação
          */
-        public void Backward( ref double[] inputs, double expectedOutput )
+        public void Backward( double[] inputs, double expectedOutput )
         {
-            SetInputs(ref inputs);
+            SetInputs(inputs);
             SetExpectedOutput(expectedOutput);
+
+            this.Forward();
 
             // Error calculation
             this.error = this.expectedOutput - this.output;
@@ -141,9 +149,9 @@ namespace Neural_Network
             this.backPropagatedError = (1.0 - this.output * this.output) * this.error;
 
             // Weights adjustment
-            for (int i = 0; i < weights.Length - 1; i++)
-                weights[i] += learningRate * this.inputs[i] * backPropagatedError;
-            weights[weights.Length - 1] = learningRate * bias * backPropagatedError;
+            weights[0] += learningRate * bias * backPropagatedError;
+            for (int i = 1; i < weights.Length; i++)
+                weights[i] += learningRate * this.inputs[i - 1] * backPropagatedError;
         }
     }
 }

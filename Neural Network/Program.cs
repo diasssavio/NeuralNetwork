@@ -10,15 +10,25 @@ namespace Neural_Network
     {
         static void Main(string[] args)
         {
+            LearningNeuron();
+
+            Console.ReadKey();
+        }
+
+        static void ForwardNeuron()
+        {
             double[] inputs = { -1.0, -1.0 };
-            double[] weights = { 0.4, 0.1, -0.1 };
-            
-            Neuron neuron = new Neuron( ref inputs );
-            neuron.SetWeights(ref weights);
+            // { bias, entradas... }
+            double[] weights = { -0.1, 0.4, 0.1 };
+
+            Neuron neuron = new Neuron(inputs);
+            neuron.SetWeights(weights);
             neuron.Forward();
 
+            Console.WriteLine("bias: {0}", Neuron.GetBias());
+
             Console.Write("Inputs: ");
-            foreach (double value in neuron.GetInput())
+            foreach (double value in neuron.GetInputs())
                 Console.Write("{0:f4}  ", value);
             Console.WriteLine();
 
@@ -28,8 +38,28 @@ namespace Neural_Network
             Console.WriteLine();
 
             Console.Write("Output: {0:f4}", neuron.GetOutput());
+        }
 
-            Console.ReadKey();
+        static void LearningNeuron()
+        {
+            Neuron neuron = new Neuron();
+            neuron.SetWeights(new double[] { -1.0, 1.0, 0.5 });
+
+            for (int i = 1; i <= 10; i++)
+            {
+                neuron.Backward(new double[] { -1.0, -1.0 }, -1.0);
+                Console.WriteLine("{0}: -1.0, -1.0 = {1:f6}", i, neuron.GetOutput());
+                neuron.Backward(new double[] { 1.0, -1.0 }, -1.0);
+                Console.WriteLine("{0}: 1.0, -1.0 = {1:f6}", i, neuron.GetOutput());
+                neuron.Backward(new double[] { -1.0, 1.0 }, -1.0);
+                Console.WriteLine("{0}: -1.0, 1.0 = {1:f6}", i, neuron.GetOutput());
+                neuron.Backward(new double[] { 1.0, 1.0 }, 1.0);
+                Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, neuron.GetOutput());
+                Console.WriteLine();
+            }
+
+            //double[] inputs = { 1.0, 1.0 };
+            //Console.WriteLine("  ");
         }
     }
 }
