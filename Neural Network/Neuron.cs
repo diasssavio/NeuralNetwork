@@ -11,9 +11,9 @@ namespace Neural_Network
         // ------------------- 1.VARIABLES AND PROPERTIES ------------------- 
         // Constants
         private static double bias = 1.0;
-        private static double learningRate = 0.5;
 
         // Forward instances with its properties
+        public double LearningRate { get; set; }
         public double[] Input { get; set; } //private double[] inputs;
         // The bias weight is found in the first position
         public double[] Weights { get; set; }   //private double[] weights;
@@ -25,11 +25,14 @@ namespace Neural_Network
         public double BackPropagatedError { get; set; } //private double backPropagatedError;
 
         //  ------------------- 2.CONSTRUCTORS ------------------- 
-        public Neuron(){}
+        public Neuron(double learningRate){
+            LearningRate = learningRate;
+        }
 
-        public Neuron(double[] input)
+        public Neuron(double[] input, double learningRate)
         {
             Input = input;
+            LearningRate = learningRate;
         }
 
         //  ------------------- 3.PROPERTIES ------------------- 
@@ -37,12 +40,6 @@ namespace Neural_Network
         {
             get { return bias; }
             set { bias = value; }
-        }
-
-        public static double LearningRate
-        {
-            get { return learningRate; }
-            set { learningRate = value; }
         }
 
         //  ------------------- 4.FUNCTIONAL METHODS ------------------- 

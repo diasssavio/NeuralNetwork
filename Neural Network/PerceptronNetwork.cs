@@ -21,7 +21,7 @@ namespace Neural_Network
             Input = input;
             Neurons = new Neuron[neuronsAmount];
             for (int i = 0; i < neuronsAmount; i++)
-                Neurons[i] = new Neuron(Input);
+                Neurons[i] = new Neuron(Input, 0.1);
         }
 
         //  ------------------- 3.GETTERS ------------------- 

@@ -21,7 +21,7 @@ namespace Neural_Network
             // { bias, entradas... }
             double[] weights = { -0.1, 0.4, 0.1 };
 
-            Neuron neuron = new Neuron(inputs);
+            Neuron neuron = new Neuron(inputs, 0.1);
             neuron.Weights = weights;
             neuron.Forward();
 
@@ -42,7 +42,7 @@ namespace Neural_Network
 
         static void LearningNeuron()
         {
-            Neuron neuron = new Neuron();
+            Neuron neuron = new Neuron(0.1);
             neuron.Weights = new double[] { -1.0, 1.0, 0.5 };
 
             for (int i = 1; i <= 10; i++)
