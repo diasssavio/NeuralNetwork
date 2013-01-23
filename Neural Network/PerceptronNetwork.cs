@@ -40,7 +40,5 @@ namespace Neural_Network
             foreach (Neuron neuron in Neurons)
                 neuron.Forward();
         }
-
-
     }
 }
