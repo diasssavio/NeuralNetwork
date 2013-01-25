@@ -15,8 +15,13 @@ namespace Neural_Network
         public Neuron[] HiddenLayer { get; set; }
         public Neuron[] OutLayer { get; set; }
 
+        public double[] ExpectedOutput { get; set; }
+
         //  ------------------- 2.CONSTRUCTORS -------------------
-        public MultiLayerPerceptronNetwork() { }
+        public MultiLayerPerceptronNetwork(double learningRate)
+        {
+            LearningRate = learningRate;
+        }
 
         public MultiLayerPerceptronNetwork(double[] input, int hiddenLayerAmount, int outLayerAmount, double learningRate)
         {
@@ -24,17 +29,17 @@ namespace Neural_Network
 
             // Allocating Hidden Layer
             HiddenLayer = new Neuron[ hiddenLayerAmount ];
-
-            // Instantiating Neurons from Hidden Layer
-            for (int i = 0; i < HiddenLayer.Length; i++)
-                HiddenLayer[i] = new Neuron(LearningRate);
+                // Instantiating Neurons from Hidden Layer
+                for (int i = 0; i < HiddenLayer.Length; i++)
+                    HiddenLayer[i] = new Neuron(LearningRate);
+            //
 
             // Allocating Output Layer
             OutLayer = new Neuron[ outLayerAmount ];
-
-            // Instantiating Neurons from Output Layer
-            for (int i = 0; i < OutLayer.Length; i++)
-                OutLayer[i] = new Neuron(LearningRate);
+                // Instantiating Neurons from Output Layer
+                for (int i = 0; i < OutLayer.Length; i++)
+                    OutLayer[i] = new Neuron(LearningRate);
+            //
 
             // Setting Weights manually
             SetManuallyWeights();
@@ -91,28 +96,79 @@ namespace Neural_Network
 
         //  ------------------- 4.FUNCTIONAL METHODS -------------------
         /**
+         * Calcula o Erro para cada neurônio na camada oculta
+         */
+        private void CalculateHiddenLayerErrors()
+        {
+            for (int i = 0; i < HiddenLayer.Length; i++)
+            { 
+                // Calculating Error
+                double sum = 0.0;
+                for(int j = 0; j < OutLayer.Length; j++)
+                    sum += OutLayer[j].BackPropagatedError * OutLayer[j].Weights[i + 1];
+                HiddenLayer[i].Error = sum;
+
+                // Calculating Back Propagated Error
+                HiddenLayer[i].CalculateBackPropagatedError();
+            }
+        }
+
+        /**
          * Realiza o processo de propagação (forward) na rede
          */
         public void Forward()
         {
             // Do forward process in hidden layer
+                // Vector to store the neuron layer outs
+                double[] tempOut = new double[ HiddenLayer.Length ];
 
-            // Vector to store the neuron layer outs
-            double[] tempOut = new double[ HiddenLayer.Length ];
+                // Forward process in current hidden layer and store the outputs
+                for (int i = 0; i < HiddenLayer.Length; i++)
+                {
+                    HiddenLayer[i].Forward();
+                    tempOut[i] = HiddenLayer[i].Output;
+                }
 
-            // Forward process in current hidden layer and store the outputs
-            for (int i = 0; i < HiddenLayer.Length; i++)
-            {
-                HiddenLayer[i].Forward();
-                tempOut[i] = HiddenLayer[i].Output;
-            }
-
-            // Set inputs from Hidden Layer on Output Layer
-            SetInputOnOutLayer(tempOut);
+                // Set inputs from Hidden Layer on Output Layer
+                SetInputOnOutLayer(tempOut);
+            //
 
             // Do forward process in the output layer
             for (int i = 0; i < OutLayer.Length; i++)
                 OutLayer[i].Forward();
+        }
+
+        /**
+         * Realiza o processo de retro-propagação (backward) na rede
+         */
+        public void Backward(double[] inputs, double[] expectedOutput)
+        {
+            if (expectedOutput.Length == ExpectedOutput.Length)
+            {
+                Input = inputs;
+                ExpectedOutput = expectedOutput;
+
+                // Call to Forward method to realize the respective calculus
+                Forward();
+
+                // Calculating Error and Back Propagated Error
+                    // Output Layer
+                    for (int i = 0; i < OutLayer.Length; i++)
+                    {
+                        OutLayer[i].ExpectedOutput = expectedOutput[i];
+                        OutLayer[i].CalculateError();
+                        OutLayer[i].CalculateBackPropagatedError();
+                    }
+
+                    // Hidden Layer
+                    CalculateHiddenLayerErrors();
+                //
+
+                // Weights Adjustment
+                    
+                //
+            }
+            else throw new Exception("Expected Output is in a different size of Output Layer´s Network");
         }
     }
 }

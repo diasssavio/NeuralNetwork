@@ -41,7 +41,7 @@ namespace Neural_Network
             Console.Write("Output: {0:f4}", neuron.Output);
         }
 
-        static void LearningNeuron()
+        static void BackwardNeuron()
         {
             Neuron neuron = new Neuron(0.1);
             neuron.Weights = new double[] { -1.0, 1.0, 0.5 };
@@ -58,7 +58,6 @@ namespace Neural_Network
                 Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, neuron.Output);
                 Console.WriteLine();
             }
-
         }
         #endregion
 
@@ -74,8 +73,8 @@ namespace Neural_Network
         }
 
         static void BackwardMLP()
-        { 
-        
+        {
+            
         }
         #endregion
     }

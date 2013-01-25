@@ -8,6 +8,7 @@ namespace Neural_Network
 {
     class Neuron
     {
+        #region 1.VARIABLES AND PROPERTIES
         // ------------------- 1.VARIABLES AND PROPERTIES ------------------- 
         // Constants
         private static double bias = 1.0;
@@ -16,7 +17,7 @@ namespace Neural_Network
         public double LearningRate { get; set; }
         public double[] Input { get; set; }  //private double[] inputs;
 
-        // The bias weight is found in the first position
+        // The bias weight is found in the first position (Weights[0])
         public double[] Weights { get; set; }   //private double[] weights;
 
         // Output from the Neuron
@@ -26,7 +27,9 @@ namespace Neural_Network
         public double ExpectedOutput { get; set; }  //private double expectedOutput;
         public double Error { get; set; }   //private double error;
         public double BackPropagatedError { get; set; } //private double backPropagatedError;
+        #endregion
 
+        #region 2.CONSTRUCTORS
         //  ------------------- 2.CONSTRUCTORS ------------------- 
         public Neuron(double learningRate){
             LearningRate = learningRate;
@@ -38,6 +41,7 @@ namespace Neural_Network
             //SortWeights();
             LearningRate = learningRate;
         }
+        #endregion
 
         //  ------------------- 3.PROPERTIES ------------------- 
         public static double Bias
@@ -64,6 +68,20 @@ namespace Neural_Network
                 Weights[i] = random.Next(-1000, 1000) / 1000.0;
         }
 
+        #region Error's calculus
+        public void CalculateError()
+        {
+            // Error calculation
+            Error = ExpectedOutput - Output;
+        }
+
+        public void CalculateBackPropagatedError()
+        {
+            // Back propagated error calculation
+            BackPropagatedError = (1.0 - Output * Output) * Error;
+        }
+        #endregion
+
         /**
          * Realiza o processo de propagação
          */
@@ -83,19 +101,15 @@ namespace Neural_Network
          */
         public void Backward( double[] inputs, double expectedOutput )
         {
-            //SetInputs(inputs);
             Input = inputs;
             ExpectedOutput = expectedOutput;
-            //SetExpectedOutput(expectedOutput);
 
             // Call to Forward method to realize the respective calculus
             Forward();
 
-            // Error calculation
-            Error = ExpectedOutput - Output;
-            
-            // Back propagated error calculation
-            BackPropagatedError = (1.0 - Output * Output) * Error;
+            // Calculate Error and Back Propagated Error
+            CalculateError();
+            CalculateBackPropagatedError();
 
             // Weights adjustment
             Weights[0] += LearningRate * Bias * BackPropagatedError;
