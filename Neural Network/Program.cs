@@ -10,7 +10,7 @@ namespace Neural_Network
     {
         static void Main(string[] args)
         {
-            ForwardMLP();
+            BackwardMLP();
 
             Console.ReadKey();
         }
@@ -50,12 +50,16 @@ namespace Neural_Network
             {
                 neuron.Backward(new double[] { -1.0, -1.0 }, -1.0);
                 Console.WriteLine("{0}: -1.0, -1.0 = {1:f6}", i, neuron.Output);
+
                 neuron.Backward(new double[] { 1.0, -1.0 }, -1.0);
                 Console.WriteLine("{0}: 1.0, -1.0 = {1:f6}", i, neuron.Output);
+
                 neuron.Backward(new double[] { -1.0, 1.0 }, -1.0);
                 Console.WriteLine("{0}: -1.0, 1.0 = {1:f6}", i, neuron.Output);
+
                 neuron.Backward(new double[] { 1.0, 1.0 }, 1.0);
                 Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, neuron.Output);
+
                 Console.WriteLine();
             }
         }
@@ -74,7 +78,25 @@ namespace Neural_Network
 
         static void BackwardMLP()
         {
+            MultiLayerPerceptronNetwork network = new MultiLayerPerceptronNetwork(2, 1, 0.5);
             
+            Console.WriteLine("Training network...");
+            for (int i = 0; i < 100; i++)
+            {
+                network.Backward(new double[] { -1.0, -1.0 }, new double[]{ -1.0 });
+                Console.WriteLine("{0}: -1.0, -1.0 = {1:f6}", i, network.GetOutputs()[0]);
+
+                network.Backward(new double[] { -1.0, 1.0 }, new double[]{ 1.0 });
+                Console.WriteLine("{0}: -1.0, 1.0 = {1:f6}", i, network.GetOutputs()[0]);
+
+                network.Backward(new double[] { 1.0, -1.0 }, new double[]{ 1.0 });
+                Console.WriteLine("{0}: 1.0, -1.0 = {1:f6}", i, network.GetOutputs()[0]);
+
+                network.Backward(new double[] { 1.0, 1.0 }, new double[]{ -1.0 });
+                Console.WriteLine("{0}: 1.0, 1.0 = {1:f6}", i, network.GetOutputs()[0]);
+
+                Console.WriteLine();
+            }
         }
         #endregion
     }

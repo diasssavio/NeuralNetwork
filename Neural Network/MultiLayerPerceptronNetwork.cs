@@ -18,24 +18,42 @@ namespace Neural_Network
         public double[] ExpectedOutput { get; set; }
 
         //  ------------------- 2.CONSTRUCTORS -------------------
-        public MultiLayerPerceptronNetwork(double learningRate)
-        {
-            LearningRate = learningRate;
-        }
-
-        public MultiLayerPerceptronNetwork(double[] input, int hiddenLayerAmount, int outLayerAmount, double learningRate)
+        public MultiLayerPerceptronNetwork(int hiddenLayerAmount, int outLayerAmount, double learningRate)
         {
             LearningRate = learningRate;
 
             // Allocating Hidden Layer
-            HiddenLayer = new Neuron[ hiddenLayerAmount ];
+                HiddenLayer = new Neuron[hiddenLayerAmount];
                 // Instantiating Neurons from Hidden Layer
                 for (int i = 0; i < HiddenLayer.Length; i++)
                     HiddenLayer[i] = new Neuron(LearningRate);
             //
 
             // Allocating Output Layer
-            OutLayer = new Neuron[ outLayerAmount ];
+                OutLayer = new Neuron[outLayerAmount];
+                // Instantiating Neurons from Output Layer
+                for (int i = 0; i < OutLayer.Length; i++)
+                    OutLayer[i] = new Neuron(LearningRate);
+            //
+            
+            // Setting Weights manually
+                SetManuallyWeights();
+        }
+
+        public MultiLayerPerceptronNetwork(double[] input, int hiddenLayerAmount, int outLayerAmount, double learningRate)
+        {
+            Input = input;
+            LearningRate = learningRate;
+
+            // Allocating Hidden Layer
+                HiddenLayer = new Neuron[ hiddenLayerAmount ];
+                // Instantiating Neurons from Hidden Layer
+                for (int i = 0; i < HiddenLayer.Length; i++)
+                    HiddenLayer[i] = new Neuron(LearningRate);
+            //
+
+            // Allocating Output Layer
+                OutLayer = new Neuron[ outLayerAmount ];
                 // Instantiating Neurons from Output Layer
                 for (int i = 0; i < OutLayer.Length; i++)
                     OutLayer[i] = new Neuron(LearningRate);
@@ -45,7 +63,7 @@ namespace Neural_Network
             SetManuallyWeights();
 
             // Set input on the hidden layer
-            SetInputOnHiddenLayer(input);
+            SetInputOnHiddenLayer();
         }
 
         //  ------------------- 3.GETTERS & SETTERS -------------------
@@ -62,6 +80,34 @@ namespace Neural_Network
         }
 
         /**
+         * 
+         */
+        public double[] GetErrors()
+        {
+            double[] errors = new double[ HiddenLayer.Length + OutLayer.Length ];
+            for (int i = 0; i < OutLayer.Length; i++)
+                errors[i] = OutLayer[i].Error;
+            for (int i = 0; i < HiddenLayer.Length; i++)
+                errors[ i + OutLayer.Length ] = HiddenLayer[i].Error;
+
+            return errors;
+        }
+
+        /**
+         * 
+         */
+        public double[] GetBackPropagatedErrors()
+        { 
+            double[] errors = new double[ HiddenLayer.Length + OutLayer.Length ];
+            for (int i = 0; i < OutLayer.Length; i++)
+                errors[i] = OutLayer[i].BackPropagatedError;
+            for (int i = 0; i < HiddenLayer.Length; i++)
+                errors[i + OutLayer.Length] = HiddenLayer[i].BackPropagatedError;
+
+            return errors;
+        }
+
+        /**
          * Função para testes da rede que define os pesos manualmente
          */
         private void SetManuallyWeights()
@@ -72,14 +118,14 @@ namespace Neural_Network
         }
 
         /**
-         * Define a entrada, input, nos neurônios da camada oculta, position
+         * Define a entrada nos neurônios da camada oculta
          */
-        private void SetInputOnHiddenLayer(double[] input)
+        private void SetInputOnHiddenLayer()
         {
             // Put values "input" in the "position" layer
-            if (input != null)
+            if (Input != null)
                 for (int i = 0; i < HiddenLayer.Length; i++)
-                    HiddenLayer[i].Input = input;
+                    HiddenLayer[i].Input = Input;
             else throw new Exception("input parameter invalid for function task!");
         }
 
@@ -143,9 +189,11 @@ namespace Neural_Network
          */
         public void Backward(double[] inputs, double[] expectedOutput)
         {
-            if (expectedOutput.Length == ExpectedOutput.Length)
+            // If expected output vector size equals to output layer size
+            if (expectedOutput.Length == OutLayer.Length)
             {
                 Input = inputs;
+                SetInputOnHiddenLayer();
                 ExpectedOutput = expectedOutput;
 
                 // Call to Forward method to realize the respective calculus
@@ -164,8 +212,14 @@ namespace Neural_Network
                     CalculateHiddenLayerErrors();
                 //
 
-                // Weights Adjustment
-                    
+                // Weights adjustment
+                    // Hidden Layer
+                    for (int i = 0; i < HiddenLayer.Length; i++)
+                        HiddenLayer[i].WeightsAdjustment();
+
+                    // Output Layer
+                    for (int i = 0; i < OutLayer.Length; i++)
+                        OutLayer[i].WeightsAdjustment();
                 //
             }
             else throw new Exception("Expected Output is in a different size of Output Layer´s Network");

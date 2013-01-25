@@ -82,6 +82,13 @@ namespace Neural_Network
         }
         #endregion
 
+        public void WeightsAdjustment()
+        {
+            Weights[0] += LearningRate * Bias * BackPropagatedError;
+            for (int i = 1; i < Weights.Length; i++)
+                Weights[i] += LearningRate * Input[i - 1] * BackPropagatedError;
+        }
+
         /**
          * Realiza o processo de propagação
          */
@@ -112,9 +119,7 @@ namespace Neural_Network
             CalculateBackPropagatedError();
 
             // Weights adjustment
-            Weights[0] += LearningRate * Bias * BackPropagatedError;
-            for (int i = 1; i < Weights.Length; i++)
-                Weights[i] += LearningRate * Input[i - 1] * BackPropagatedError;
+            WeightsAdjustment();
         }
     }
 }
