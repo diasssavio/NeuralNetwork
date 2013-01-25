@@ -9,20 +9,37 @@ namespace Neural_Network
     class MultiLayerPerceptronNetwork
     {
         // ------------------- 1.VARIABLES AND PROPERTIES -------------------
+        public double LearningRate { get; set; }
+
         public double[] Input { get; set; }
-        public Neuron[][] HiddenLayer { get; set; }
+        public Neuron[] HiddenLayer { get; set; }
         public Neuron[] OutLayer { get; set; }
 
         //  ------------------- 2.CONSTRUCTORS -------------------
         public MultiLayerPerceptronNetwork() { }
 
-        public MultiLayerPerceptronNetwork(double[] input, int[] hiddenLayerAmount)
+        public MultiLayerPerceptronNetwork(double[] input, int hiddenLayerAmount, int outLayerAmount, double learningRate)
         {
-            HiddenLayer = new Neuron[ hiddenLayerAmount.Length ][];
-            for (int i = 0; i < HiddenLayer.Length; i++)
-                HiddenLayer[i] = new Neuron[ hiddenLayerAmount[i] ];
+            LearningRate = learningRate;
 
-            // Set input on the first hidden layer
+            // Allocating Hidden Layer
+            HiddenLayer = new Neuron[ hiddenLayerAmount ];
+
+            // Instantiating Neurons from Hidden Layer
+            for (int i = 0; i < HiddenLayer.Length; i++)
+                HiddenLayer[i] = new Neuron(LearningRate);
+
+            // Allocating Output Layer
+            OutLayer = new Neuron[ outLayerAmount ];
+
+            // Instantiating Neurons from Output Layer
+            for (int i = 0; i < OutLayer.Length; i++)
+                OutLayer[i] = new Neuron(LearningRate);
+
+            // Setting Weights manually
+            SetManuallyWeights();
+
+            // Set input on the hidden layer
             SetInputOnHiddenLayer(input);
         }
 
@@ -40,20 +57,24 @@ namespace Neural_Network
         }
 
         /**
+         * Função para testes da rede que define os pesos manualmente
+         */
+        private void SetManuallyWeights()
+        {
+            HiddenLayer[0].Weights = new double[] { -0.2, 0.5, -0.65 };
+            HiddenLayer[1].Weights = new double[] { 0.3, 0.72, 0.8 };
+            OutLayer[0].Weights = new double[] { -0.5, 1.0, -1.0 };
+        }
+
+        /**
          * Define a entrada, input, nos neurônios da camada oculta, position
          */
-        private void SetInputOnHiddenLayer(double[] input, int position = 0)
+        private void SetInputOnHiddenLayer(double[] input)
         {
+            // Put values "input" in the "position" layer
             if (input != null)
-            {
-                // If network input isn't setted yet. First hidden layer case
-                if (Input != null)
-                    Input = input;
-
-                // Put values "input" in the "position" layer
-                for (int i = 0; i < HiddenLayer[position].Length; i++)
-                    HiddenLayer[position][i] = new Neuron(input, 0.1);
-            }
+                for (int i = 0; i < HiddenLayer.Length; i++)
+                    HiddenLayer[i].Input = input;
             else throw new Exception("input parameter invalid for function task!");
         }
 
@@ -64,7 +85,7 @@ namespace Neural_Network
         {
             if (input != null)
                 for (int i = 0; i < OutLayer.Length; i++)
-                    OutLayer[i] = new Neuron(input, 0.1);
+                    OutLayer[i].Input = input;
             else throw new Exception("input parameter invalid for function task!");
         }
 
@@ -74,25 +95,20 @@ namespace Neural_Network
          */
         public void Forward()
         {
-            // Do forward process in hidden layers
+            // Do forward process in hidden layer
+
+            // Vector to store the neuron layer outs
+            double[] tempOut = new double[ HiddenLayer.Length ];
+
+            // Forward process in current hidden layer and store the outputs
             for (int i = 0; i < HiddenLayer.Length; i++)
             {
-                // Vector to store the current neuron layer outs
-                double[] tempOut = new double[ HiddenLayer[i].Length ];
-
-                // Forward process in current hidden layer and store the outputs
-                for (int j = 0; j < HiddenLayer[i].Length; j++)
-                {
-                    HiddenLayer[i][j].Forward();
-                    tempOut[j] = HiddenLayer[i][j].Output;
-                }
-
-                // If the hidden layers is over, then set inputs on output layer
-                if (i + 1 == HiddenLayer.Length)
-                    SetInputOnOutLayer(tempOut);
-                else
-                    SetInputOnHiddenLayer(tempOut, i + 1);
+                HiddenLayer[i].Forward();
+                tempOut[i] = HiddenLayer[i].Output;
             }
+
+            // Set inputs from Hidden Layer on Output Layer
+            SetInputOnOutLayer(tempOut);
 
             // Do forward process in the output layer
             for (int i = 0; i < OutLayer.Length; i++)

@@ -10,11 +10,12 @@ namespace Neural_Network
     {
         static void Main(string[] args)
         {
-            LearningNeuron();
+            ForwardMLP();
 
             Console.ReadKey();
         }
 
+        #region Neuron Tests
         static void ForwardNeuron()
         {
             double[] inputs = { -1.0, -1.0 };
@@ -59,5 +60,23 @@ namespace Neural_Network
             }
 
         }
+        #endregion
+
+        #region MultiLayerPerceptronNetwork Tests
+        static void ForwardMLP()
+        {
+            MultiLayerPerceptronNetwork network = new MultiLayerPerceptronNetwork( new double[] { -1, -1 }, 2, 1, 0.5 );
+            network.Forward();
+
+            Console.WriteLine("MLP output: ");
+            foreach (double output in network.GetOutputs())
+                Console.Write("{0}\t", output);
+        }
+
+        static void BackwardMLP()
+        { 
+        
+        }
+        #endregion
     }
 }

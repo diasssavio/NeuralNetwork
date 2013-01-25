@@ -18,6 +18,8 @@ namespace Neural_Network
 
         // The bias weight is found in the first position
         public double[] Weights { get; set; }   //private double[] weights;
+
+        // Output from the Neuron
         public double Output { get; set; }  //private double output;
 
         // Backward instances with its properties
@@ -33,7 +35,7 @@ namespace Neural_Network
         public Neuron(double[] input, double learningRate)
         {
             Input = input;
-            SortWeights();
+            //SortWeights();
             LearningRate = learningRate;
         }
 
